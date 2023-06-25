@@ -5,7 +5,7 @@
 # |_|\_\___/|_.__/|_|  \_/\_/ \__,_|_|  \___|
 # (C) Copyright 2023 KobiWare, LLC.  All Rights Reserved.
 
-from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QRadioButton, QLineEdit, QHBoxLayout, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QRadioButton, QLineEdit, QHBoxLayout, QVBoxLayout, QWidget, QCheckBox
 from PyQt6.QtGui import QFont, QPixmap
 from PyQt6.QtCore import Qt
 import sys
@@ -59,6 +59,18 @@ class MinecraftSetup(QMainWindow):
         self.cracked = QRadioButton("I don't have an account", parent=self)
         self.cracked.toggled.connect(lambda: self.btnstate(self.cracked))
         self.cracked.hide()
+        
+        self.essential = QCheckBox("Install essential mod alongside instance", parent=self)
+        self.essential.toggled.connect(lambda: self.btnstate(self.essential))
+        self.essential.hide()
+        
+        self.updates = QCheckBox("Install updates automagically", parent=self)
+        self.updates.toggled.connect(lambda: self.btnstate(self.updates))
+        self.updates.hide()
+        
+        self.devmode = QCheckBox("Enable developer mode", parent=self)
+        self.devmode.toggled.connect(lambda: self.btnstate(self.devmode))
+        self.devmode.hide()
 
         self.username = QLineEdit(parent=self)
         self.username.setGeometry(10, 150, 200, 30)
