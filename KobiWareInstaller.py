@@ -154,7 +154,7 @@ class MinecraftSetup(QMainWindow):
                 if self.step == 2:
                     self.image_label.setPixmap(self.images[2])
                     self.title.setText("Options")
-                    self.desc.setText("You can choose to install additional components, such as Minecraft Launcher, Minecraft Launcher Mods, and Minecraft Launcher Skins.")
+                    self.desc.setText("You can choose to install additional components or enable developer mode.")
                     self.username.hide()
                     self.java.hide()
                     self.cracked.hide()
