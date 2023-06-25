@@ -60,11 +60,11 @@ class MinecraftSetup(QMainWindow):
         self.cracked.toggled.connect(lambda: self.btnstate(self.cracked))
         self.cracked.hide()
         
-        self.essential = QCheckBox("Install essential mod alongside instance", parent=self)
+        self.essential = QCheckBox("Install essential mod alongside instance", parent=self, checked=True)
         self.essential.toggled.connect(lambda: self.checkstate(self.essential))
         self.essential.hide()
         
-        self.updates = QCheckBox("Install updates automagically", parent=self)
+        self.updates = QCheckBox("Install updates automagically", parent=self, checked=True)
         self.updates.toggled.connect(lambda: self.checkstate(self.updates))
         self.updates.hide()
         
@@ -192,7 +192,7 @@ class MinecraftSetup(QMainWindow):
         self.username.setDisabled(self.paid)
         
     def checkstate(self, checkbox):
-        if checkbox.text() == "Install essential mod alongside instance":
+        if checkbox.text() == "Install essential mod alongside preinstalled instance":
             if checkbox.isChecked():
                 self.installEssential = True
         
@@ -202,7 +202,7 @@ class MinecraftSetup(QMainWindow):
         
         if checkbox.text() == "Enable developer mode":
             if checkbox.isChecked():
-                self.devmode = True
+                self.enableDevmode = True
 
 
 app = QApplication([])
