@@ -59,18 +59,6 @@ class MinecraftSetup(QMainWindow):
         self.cracked = QRadioButton("I don't have an account", parent=self)
         self.cracked.toggled.connect(lambda: self.btnstate(self.cracked))
         self.cracked.hide()
-        
-        self.essential = QCheckBox("Install essential mod alongside instance", parent=self, checked=True)
-        self.essential.toggled.connect(lambda: self.checkstate(self.essential))
-        self.essential.hide()
-        
-        self.updates = QCheckBox("Install updates automagically", parent=self, checked=True)
-        self.updates.toggled.connect(lambda: self.checkstate(self.updates))
-        self.updates.hide()
-        
-        self.devmode = QCheckBox("Enable developer mode", parent=self)
-        self.devmode.toggled.connect(lambda: self.checkstate(self.devmode))
-        self.devmode.hide()
 
         self.username = QLineEdit(parent=self)
         self.username.setGeometry(10, 150, 200, 30)
@@ -95,9 +83,6 @@ class MinecraftSetup(QMainWindow):
         self.main_layout.addWidget(self.cracked)
         self.main_layout.addWidget(self.username)
         self.main_layout.addWidget(self.takenText)
-        self.main_layout.addWidget(self.essential)
-        self.main_layout.addWidget(self.updates)
-        self.main_layout.addWidget(self.devmode)
         self.main_layout.addLayout(self.buttons_layout)
 
         central_widget = QWidget(self)
@@ -164,22 +149,16 @@ class MinecraftSetup(QMainWindow):
                 self.image_label.setPixmap(self.images[1])
                 self.username.show()
                 self.takenText.show()
-                self.essential.hide()
-                self.updates.hide()
-                self.devmode.hide()
 
             else:
                 if self.step == 2:
                     self.image_label.setPixmap(self.images[2])
-                    self.title.setText("Options")
-                    self.desc.setText("You can choose to install additional components or enable developer mode.")
+                    self.title.setText("Install")
+                    self.desc.setText("Preparing to install...")
                     self.username.hide()
                     self.java.hide()
                     self.cracked.hide()
                     self.takenText.hide()
-                    self.essential.show()
-                    self.updates.show()
-                    self.devmode.show()
 
     def btnstate(self, button):
         if button.text() == "I have an account":
@@ -193,19 +172,6 @@ class MinecraftSetup(QMainWindow):
                 self.paid = False
                 self.handle_text_edit()
         self.username.setDisabled(self.paid)
-        
-    def checkstate(self, checkbox):
-        if checkbox.text() == "Install essential mod alongside preinstalled instance":
-            if checkbox.isChecked():
-                self.installEssential = True
-        
-        if checkbox.text() == "Install updates automagically":
-            if checkbox.isChecked():
-                self.installUpdates = True
-        
-        if checkbox.text() == "Enable developer mode":
-            if checkbox.isChecked():
-                self.enableDevmode = True
 
 
 app = QApplication([])
