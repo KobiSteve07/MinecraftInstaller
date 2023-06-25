@@ -164,6 +164,9 @@ class MinecraftSetup(QMainWindow):
                 self.image_label.setPixmap(self.images[1])
                 self.username.show()
                 self.takenText.show()
+                self.essential.hide()
+                self.updates.hide()
+                self.devmode.hide()
 
             else:
                 if self.step == 2:
