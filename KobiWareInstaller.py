@@ -25,6 +25,7 @@ class MinecraftSetup(QMainWindow):
 
         self.step = 0
         self.paid = False
+        self.username = ""
 
         self.title = QLabel("Welcome to the KobiWare Minecraft Client Installer!", parent=self)
         self.title.setGeometry(10, 20, 450, 25)
@@ -176,15 +177,26 @@ class MinecraftSetup(QMainWindow):
                     self.takenText.hide()
                     self.progress.show()
                     
-                    with zipfile.ZipFile("mmc-develop-win32.zip") as zf:
-                        filesList = zf.namelist()
-                        for idx, file in enumerate(filesList):
-                            percent = round((idx / len(filesList))*100)
-                            self.progress.setFormat("Installing Launcher... %d%%" % percent)
-                            self.progress.setValue(percent)
-                            zf.extract(file, "MultiMC")
-                        self.progress.setFormat("Extracted Minecraft Launcher")
-                        self.progress.setValue(100)
+                    if self.paid == True:
+                        with zipfile.ZipFile("mmc-develop-win32.zip") as zf:
+                            filesList = zf.namelist()
+                            for idx, file in enumerate(filesList):
+                                percent = round((idx / len(filesList))*100)
+                                self.progress.setFormat("Installing Launcher... %d%%" % percent)
+                                self.progress.setValue(percent)
+                                zf.extract(file, "MultiMC")
+                            self.progress.setFormat("Extracted Minecraft Launcher")
+                            self.progress.setValue(100)
+                    elif self.paid == False:
+                        with zipfile.ZipFile("mmc-cracked-win32.zip") as zf:
+                            filesList = zf.namelist()
+                            for idx, file in enumerate(filesList):
+                                percent = round((idx / len(filesList))*100)
+                                self.progress.setFormat("Installing Launcher... %d%%" % percent)
+                                self.progress.setValue(percent)
+                                zf.extract(file, "UltimMC")
+                            self.progress.setFormat("Extracted Minecraft Launcher")
+                            self.progress.setValue(100)
                         
                     self.progress.setFormat("Installing Java dependencies...")
                     self.progress.setValue(0)
