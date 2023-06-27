@@ -5,11 +5,15 @@
 # |_|\_\___/|_.__/|_|  \_/\_/ \__,_|_|  \___|
 # (C) Copyright 2023 KobiWare, LLC.  All Rights Reserved.
 
-from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QRadioButton, QLineEdit, QHBoxLayout, QVBoxLayout, QWidget, QCheckBox
+from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QRadioButton, QLineEdit, QHBoxLayout, QVBoxLayout, QWidget, QProgressBar
 from PyQt6.QtGui import QFont, QPixmap
 from PyQt6.QtCore import Qt
 import sys
 import requests
+import zipfile
+import winreg
+import jdk
+
 
 
 class MinecraftSetup(QMainWindow):
@@ -36,7 +40,7 @@ class MinecraftSetup(QMainWindow):
         self.image_label.setPixmap(self.images[0])  # Set initial pixmap
 
         self.desc = QLabel(
-            "This KobiWare installer will install Minecraft and additional components, some optional, onto your computer. This will enable you to play on the KobiWare Minecraft server or create singleplayer worlds.\n\n\nTo continue, click Next.",
+            "This KobiWare installer will install Minecraft and additional components onto your computer. This will enable you to play on the KobiWare Minecraft server or create singleplayer worlds.\n\n\nTo continue, click Next.",
             parent=self, alignment=Qt.AlignmentFlag.AlignTop)
         self.desc.setGeometry(10, 50, 450, 300)
         self.desc.setFont(QFont("Arial", 10))
@@ -69,6 +73,10 @@ class MinecraftSetup(QMainWindow):
         self.takenText = QLabel("", parent=self)
         self.takenText.setGeometry(10, 180, 200, 30)
         self.takenText.hide()
+        
+        self.progress = QProgressBar(parent=self)
+        self.progress.setFormat("Preparing to install...")
+        self.progress.hide()
 
         self.buttons_layout = QHBoxLayout()
         self.buttons_layout.addWidget(self.back)
@@ -83,6 +91,7 @@ class MinecraftSetup(QMainWindow):
         self.main_layout.addWidget(self.cracked)
         self.main_layout.addWidget(self.username)
         self.main_layout.addWidget(self.takenText)
+        self.main_layout.addWidget(self.progress)
         self.main_layout.addLayout(self.buttons_layout)
 
         central_widget = QWidget(self)
@@ -159,6 +168,54 @@ class MinecraftSetup(QMainWindow):
                     self.java.hide()
                     self.cracked.hide()
                     self.takenText.hide()
+                    self.progress.show()
+                    self.back.hide()
+                    
+                    with zipfile.ZipFile("mmc-develop-win32.zip") as zf:
+                        filesList = zf.namelist()
+                        for idx, file in enumerate(filesList):
+                            percent = round((idx / len(filesList))*100)
+                            self.progress.setFormat("Installing Launcher... %d%%" % percent)
+                            self.progress.setValue(percent)
+                            zf.extract(file, "MultiMC")
+                        self.progress.setFormat("Extracted Minecraft Launcher")
+                        self.progress.setValue(100)
+                        
+                    self.progress.setFormat("Installing Java dependencies...")
+                    self.progress.setValue(0)
+                    jdk.install('17')
+                    self.progress.setFormat("Installed java dependencies")
+                    self.progress.setValue(100)
+                    
+                    ### DO NOT TOUCH, YOUR REGISTRY WILL EXPLODE ###
+                    self.progress.setFormat("Editing your registry...")
+                    self.progress.setValue(0)
+                    # Specify the new value you want to set for the PATH variable
+                    new_path_value = '%USERPROFILE%\\.jdk\\jdk-17.0.7+7\\bin'
+
+                    # Open the registry key for the current user environment variables
+                    key = winreg.OpenKey(
+                        winreg.HKEY_CURRENT_USER,
+                        r'Environment',
+                        0,
+                        winreg.KEY_ALL_ACCESS
+                    )
+
+                    # Get the current value of the PATH variable
+                    current_path_value, _ = winreg.QueryValueEx(key, 'PATH')
+
+                    # Check if the new value is already present in the PATH
+                    if new_path_value not in current_path_value:
+                        # Append the new value to the current PATH
+                        new_path_value = current_path_value + ';' + new_path_value
+
+                        # Set the updated value for the PATH variable
+                        winreg.SetValueEx(key, 'PATH', 0, winreg.REG_EXPAND_SZ, new_path_value)
+
+                    # Close the registry key
+                    winreg.CloseKey(key)
+                    self.progress.setFormat("Registry edited")
+                    self.progress.setValue(100)
 
     def btnstate(self, button):
         if button.text() == "I have an account":
