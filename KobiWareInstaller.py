@@ -11,9 +11,9 @@ from PyQt6.QtCore import Qt
 import sys
 import requests
 import zipfile
-import winreg
+if sys.platform == "win32":
+    import winreg
 import jdk
-
 
 
 class MinecraftSetup(QMainWindow):
@@ -131,8 +131,11 @@ class MinecraftSetup(QMainWindow):
         sys.exit()
 
     def handle_next_click(self):
-        self.step += 1
-        self.step_change()
+        if self.step == 2:
+            self.handle_cancel_click()
+        else:
+            self.step += 1
+            self.step_change()
 
     def handle_back_click(self):
         self.step -= 1
@@ -161,6 +164,9 @@ class MinecraftSetup(QMainWindow):
 
             else:
                 if self.step == 2:
+                    self.back.hide()
+                    self.next_button.setText("Finish")
+                    self.next_button.setDisabled(True)
                     self.image_label.setPixmap(self.images[2])
                     self.title.setText("Install")
                     self.desc.setText("Preparing to install...")
@@ -169,7 +175,6 @@ class MinecraftSetup(QMainWindow):
                     self.cracked.hide()
                     self.takenText.hide()
                     self.progress.show()
-                    self.back.hide()
                     
                     with zipfile.ZipFile("mmc-develop-win32.zip") as zf:
                         filesList = zf.namelist()
@@ -187,35 +192,39 @@ class MinecraftSetup(QMainWindow):
                     self.progress.setFormat("Installed java dependencies")
                     self.progress.setValue(100)
                     
-                    ### DO NOT TOUCH, YOUR REGISTRY WILL EXPLODE ###
-                    self.progress.setFormat("Editing your registry...")
-                    self.progress.setValue(0)
-                    # Specify the new value you want to set for the PATH variable
-                    new_path_value = '%USERPROFILE%\\.jdk\\jdk-17.0.7+7\\bin'
+                    if sys.platform == "win32":
+                        ### DO NOT TOUCH, YOUR REGISTRY WILL EXPLODE ###
+                        self.progress.setFormat("Editing your registry...")
+                        self.progress.setValue(0)
+                        # Specify the new value you want to set for the PATH variable
+                        new_path_value = '%USERPROFILE%\\.jdk\\jdk-17.0.7+7\\bin'
 
-                    # Open the registry key for the current user environment variables
-                    key = winreg.OpenKey(
-                        winreg.HKEY_CURRENT_USER,
-                        r'Environment',
-                        0,
-                        winreg.KEY_ALL_ACCESS
-                    )
+                        # Open the registry key for the current user environment variables
+                        key = winreg.OpenKey(
+                            winreg.HKEY_CURRENT_USER,
+                            r'Environment',
+                            0,
+                            winreg.KEY_ALL_ACCESS
+                        )
 
-                    # Get the current value of the PATH variable
-                    current_path_value, _ = winreg.QueryValueEx(key, 'PATH')
+                        # Get the current value of the PATH variable
+                        current_path_value, _ = winreg.QueryValueEx(key, 'PATH')
 
-                    # Check if the new value is already present in the PATH
-                    if new_path_value not in current_path_value:
-                        # Append the new value to the current PATH
-                        new_path_value = current_path_value + ';' + new_path_value
+                        # Check if the new value is already present in the PATH
+                        if new_path_value not in current_path_value:
+                            # Append the new value to the current PATH
+                            new_path_value = current_path_value + ';' + new_path_value
 
-                        # Set the updated value for the PATH variable
-                        winreg.SetValueEx(key, 'PATH', 0, winreg.REG_EXPAND_SZ, new_path_value)
+                            # Set the updated value for the PATH variable
+                            winreg.SetValueEx(key, 'PATH', 0, winreg.REG_EXPAND_SZ, new_path_value)
 
-                    # Close the registry key
-                    winreg.CloseKey(key)
-                    self.progress.setFormat("Registry edited")
-                    self.progress.setValue(100)
+                        # Close the registry key
+                        winreg.CloseKey(key)
+                        self.progress.setFormat("Registry edited")
+                        self.progress.setValue(100)
+                        
+                    self.progress.setFormat("Installation complete")
+                    self.next_button.setDisabled(False)
 
     def btnstate(self, button):
         if button.text() == "I have an account":
