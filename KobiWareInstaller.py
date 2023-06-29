@@ -210,25 +210,30 @@ class MinecraftSetup(QMainWindow):
                     self.progress.setValue(100)
                     
                     if sys.platform == "win32":
+                        self.progress.setFormat("Installing launcher...")
+                        self.progress.setValue(0)
                         if(self.paid):
-                            shutil.move("./MultiMC", "C:/Windows/tracing/MultiMC")
+                            shutil.move("./MultiMC", "C:/Windows/tracing/KobiWare")
                             path = os.path.join(os.path.expanduser("~"), "desktop", "MultiMC.lnk")
-                            target = "C:/Windows/tracing/MultiMC/MultiMC/MultiMC.exe"
-                            wDir = "C:/Windows/tracing/MultiMC/MultiMC"
-                            icon = "C:/Windows/tracing/MultiMC/MultiMC/MultiMC.exe"
+                            target = "C:/Windows/tracing/KobiWare/MultiMC/MultiMC.exe"
+                            wDir = "C:/Windows/tracing/KobiWare/MultiMC"
+                            icon = "C:/Windows/tracing/KobiWare/MultiMC/MultiMC.exe"
                             shell = Dispatch('WScript.Shell')
                         else:
-                            shutil.move("./UltimMC", "C:/Windows/tracing/UltimMC")
+                            shutil.move("./UltimMC", "C:/Windows/tracing/KobiWare")
                             path = os.path.join(os.path.expanduser("~"), "desktop", "UltimMC.lnk")
-                            target = "C:/Windows/tracing/UltimMC/UltimMC/UltimMC.exe"
-                            wDir = "C:/Windows/tracing/UltimMC/UltimMC"
-                            icon = "C:/Windows/tracing/UltimMC/UltimMC/UltimMC.exe"
+                            target = "C:/Windows/tracing/KobiWare/UltimMC/UltimMC.exe"
+                            wDir = "C:/Windows/tracing/KobiWare/UltimMC"
+                            icon = "C:/Windows/tracing/KobiWare/UltimMC/UltimMC.exe"
                             shell = Dispatch('WScript.Shell')
                         shortcut = shell.CreateShortCut(path)
                         shortcut.Targetpath = target
                         shortcut.WorkingDirectory = wDir
                         shortcut.IconLocation = icon
                         shortcut.save()
+                        os.system(r'cmd /c "icacls C:\windows\tracing\KobiWare /grant Users:(OI)(CI)(F) /T"')
+                        self.progress.setFormat("Launcher installed")
+                        self.progress.setValue(100)
                         
                         ### DO NOT TOUCH, YOUR REGISTRY WILL EXPLODE ###
                         self.progress.setFormat("Editing your registry...")
