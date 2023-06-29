@@ -11,9 +11,9 @@ from PyQt6.QtCore import Qt
 import sys
 import os
 import requests
+import fileinput
 import zipfile
 if sys.platform == "win32":
-    import winreg
     from win32com.client import Dispatch
     import shutil
 import jdk
@@ -29,7 +29,7 @@ class MinecraftSetup(QMainWindow):
         self.center_window()
 
         self.step = 0
-        self.paid = True
+        self.paid = "MultiMC"
         self.username = ""
 
         self.title = QLabel("Welcome to the KobiWare Minecraft Client Installer!", parent=self)
@@ -182,50 +182,32 @@ class MinecraftSetup(QMainWindow):
                     self.takenText.hide()
                     self.progress.show()
                     
-                    if self.paid == True:
-                        with zipfile.ZipFile("mmc-develop-win32.zip") as zf:
-                            filesList = zf.namelist()
-                            for idx, file in enumerate(filesList):
-                                percent = round((idx / len(filesList))*100)
-                                self.progress.setFormat("Installing Launcher... %d%%" % percent)
-                                self.progress.setValue(percent)
-                                zf.extract(file, "MultiMC")
-                            self.progress.setFormat("Extracted Minecraft Launcher")
-                            self.progress.setValue(100)
-                    elif self.paid == False:
-                        with zipfile.ZipFile("mmc-cracked-win32.zip") as zf:
-                            filesList = zf.namelist()
-                            for idx, file in enumerate(filesList):
-                                percent = round((idx / len(filesList))*100)
-                                self.progress.setFormat("Installing Launcher... %d%%" % percent)
-                                self.progress.setValue(percent)
-                                zf.extract(file, "UltimMC")
-                            self.progress.setFormat("Extracted Minecraft Launcher")
-                            self.progress.setValue(100)
+                    with zipfile.ZipFile(self.paid + "-win32.zip") as zf:
+                        filesList = zf.namelist()
+                        for idx, file in enumerate(filesList):
+                            percent = round((idx / len(filesList))*100)
+                            self.progress.setFormat("Installing Launcher... %d%%" % percent)
+                            self.progress.setValue(percent)
+                            zf.extract(file, self.paid)
+                        self.progress.setFormat("Extracted Minecraft Launcher")
+                        self.progress.setValue(100)
                         
                     self.progress.setFormat("Installing Java dependencies...")
                     self.progress.setValue(0)
                     jdk.install('17')
+                    
                     self.progress.setFormat("Installed java dependencies")
                     self.progress.setValue(100)
                     
                     if sys.platform == "win32":
                         self.progress.setFormat("Installing launcher...")
                         self.progress.setValue(0)
-                        if(self.paid):
-                            shutil.move("./MultiMC", "C:/Windows/tracing/KobiWare")
-                            path = os.path.join(os.path.expanduser("~"), "desktop", "MultiMC.lnk")
-                            target = "C:/Windows/tracing/KobiWare/MultiMC/MultiMC.exe"
-                            wDir = "C:/Windows/tracing/KobiWare/MultiMC"
-                            icon = "C:/Windows/tracing/KobiWare/MultiMC/MultiMC.exe"
-                            shell = Dispatch('WScript.Shell')
-                        else:
-                            shutil.move("./UltimMC", "C:/Windows/tracing/KobiWare")
-                            path = os.path.join(os.path.expanduser("~"), "desktop", "UltimMC.lnk")
-                            target = "C:/Windows/tracing/KobiWare/UltimMC/UltimMC.exe"
-                            wDir = "C:/Windows/tracing/KobiWare/UltimMC"
-                            icon = "C:/Windows/tracing/KobiWare/UltimMC/UltimMC.exe"
-                            shell = Dispatch('WScript.Shell')
+                        shutil.move("./"+self.paid, "C:/Windows/tracing/KobiWare")
+                        path = os.path.join(os.path.expanduser("~"), "desktop", self.paid+".lnk")
+                        target = "C:/Windows/tracing/KobiWare/"+self.paid+"/"+self.paid+".exe"
+                        wDir = "C:/Windows/tracing/KobiWare/"+self.paid
+                        icon = "C:/Windows/tracing/KobiWare/"+self.paid+"/"+self.paid+".exe"
+                        shell = Dispatch('WScript.Shell')
                         shortcut = shell.CreateShortCut(path)
                         shortcut.Targetpath = target
                         shortcut.WorkingDirectory = wDir
@@ -235,49 +217,19 @@ class MinecraftSetup(QMainWindow):
                         self.progress.setFormat("Launcher installed")
                         self.progress.setValue(100)
                         
-                        ### DO NOT TOUCH, YOUR REGISTRY WILL EXPLODE ###
-                        self.progress.setFormat("Editing your registry...")
-                        self.progress.setValue(0)
-                        # Specify the new value you want to set for the PATH variable
-                        new_path_value = '%USERPROFILE%\\.jdk\\jdk-17.0.7+7\\bin'
-
-                        # Open the registry key for the current user environment variables
-                        key = winreg.OpenKey(
-                            winreg.HKEY_CURRENT_USER,
-                            r'Environment',
-                            0,
-                            winreg.KEY_ALL_ACCESS
-                        )
-
-                        # Get the current value of the PATH variable
-                        current_path_value, _ = winreg.QueryValueEx(key, 'PATH')
-
-                        # Check if the new value is already present in the PATH
-                        if new_path_value not in current_path_value:
-                            # Append the new value to the current PATH
-                            new_path_value = current_path_value + ';' + new_path_value
-
-                            # Set the updated value for the PATH variable
-                            winreg.SetValueEx(key, 'PATH', 0, winreg.REG_EXPAND_SZ, new_path_value)
-
-                        # Close the registry key
-                        winreg.CloseKey(key)
-                        self.progress.setFormat("Registry edited")
-                        self.progress.setValue(100)
-                    
                     self.progress.setFormat("Installation complete")
                     self.next_button.setDisabled(False)
 
     def btnstate(self, button):
         if button.text() == "I have an account":
             if button.isChecked():
-                self.paid = True
+                self.paid = "MultiMC"
                 self.takenText.setText("")
                 self.next_button.setDisabled(False)
 
         if button.text() == "I don't have an account":
             if button.isChecked():
-                self.paid = False
+                self.paid = "UltimMC"
                 self.handle_text_edit()
         self.username.setDisabled(self.paid)
 
