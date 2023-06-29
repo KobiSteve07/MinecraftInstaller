@@ -10,12 +10,13 @@ from PyQt6.QtGui import QFont, QPixmap
 from PyQt6.QtCore import Qt
 import sys
 import os
+import socket
 import requests
 import fileinput
 import zipfile
 if sys.platform == "win32":
     from win32com.client import Dispatch
-    import shutil
+import shutil
 import jdk
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -146,6 +147,14 @@ class MinecraftSetup(QMainWindow):
     def handle_back_click(self):
         self.step -= 1
         self.step_change()
+        
+    def replace_line(self, file_path, line_number, new_content):
+        with fileinput.FileInput(file_path, inplace=True) as file:
+            for line in file:
+                if file.lineno() == line_number:
+                    print(new_content)
+                else:
+                    print(line, end='')
 
     def step_change(self):
         if self.step == 0:
@@ -191,13 +200,6 @@ class MinecraftSetup(QMainWindow):
                             zf.extract(file, self.paid)
                         self.progress.setFormat("Extracted Minecraft Launcher")
                         self.progress.setValue(100)
-                        
-                    self.progress.setFormat("Installing Java dependencies...")
-                    self.progress.setValue(0)
-                    jdk.install('17')
-                    
-                    self.progress.setFormat("Installed java dependencies")
-                    self.progress.setValue(100)
                     
                     if sys.platform == "win32":
                         self.progress.setFormat("Installing launcher...")
@@ -216,6 +218,14 @@ class MinecraftSetup(QMainWindow):
                         os.system(r'cmd /c "icacls C:\windows\tracing\KobiWare /grant Users:(OI)(CI)(F) /T"')
                         self.progress.setFormat("Launcher installed")
                         self.progress.setValue(100)
+                    
+                        self.progress.setFormat("Installing Java dependencies...")
+                        self.progress.setValue(0)
+                        jdk.install('17', vendor='Azul')
+                        self.replace_line("C:/Windows/tracing/KobiWare/" + self.paid + "/" + self.paid + ".cfg", 1, "JavaPath=C:/Users/" + os.getlogin() + "/.jdk/zulu17.42.19-ca-jdk17.0.7-win_x64/bin/javaw.exe")
+                        self.replace_line("C:/Windows/tracing/KobiWare/" + self.paid + "/" + self.paid + ".cfg", 3, "LastHostname=" + socket.gethostname())
+                        self.progress.setFormat("Installed java dependencies")
+                        self.progress.setValue(100)
                         
                     self.progress.setFormat("Installation complete")
                     self.next_button.setDisabled(False)
@@ -231,7 +241,7 @@ class MinecraftSetup(QMainWindow):
             if button.isChecked():
                 self.paid = "UltimMC"
                 self.handle_text_edit()
-        self.username.setDisabled(self.paid)
+        self.username.setDisabled(self.paid == "MultiMC")
 
 
 app = QApplication([])
