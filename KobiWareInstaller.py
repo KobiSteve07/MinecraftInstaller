@@ -9,11 +9,16 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QRad
 from PyQt6.QtGui import QFont, QPixmap
 from PyQt6.QtCore import Qt
 import sys
+import os
 import requests
 import zipfile
 if sys.platform == "win32":
     import winreg
+    from win32com.client import Dispatch
+    import shutil
 import jdk
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
 
 
 class MinecraftSetup(QMainWindow):
@@ -24,7 +29,7 @@ class MinecraftSetup(QMainWindow):
         self.center_window()
 
         self.step = 0
-        self.paid = False
+        self.paid = True
         self.username = ""
 
         self.title = QLabel("Welcome to the KobiWare Minecraft Client Installer!", parent=self)
@@ -205,6 +210,26 @@ class MinecraftSetup(QMainWindow):
                     self.progress.setValue(100)
                     
                     if sys.platform == "win32":
+                        if(self.paid):
+                            shutil.move("./MultiMC", "C:/Windows/tracing/MultiMC")
+                            path = os.path.join(os.path.expanduser("~"), "desktop", "MultiMC.lnk")
+                            target = "C:/Windows/tracing/MultiMC/MultiMC/MultiMC.exe"
+                            wDir = "C:/Windows/tracing/MultiMC/MultiMC"
+                            icon = "C:/Windows/tracing/MultiMC/MultiMC/MultiMC.exe"
+                            shell = Dispatch('WScript.Shell')
+                        else:
+                            shutil.move("./UltimMC", "C:/Windows/tracing/UltimMC")
+                            path = os.path.join(os.path.expanduser("~"), "desktop", "UltimMC.lnk")
+                            target = "C:/Windows/tracing/UltimMC/UltimMC/UltimMC.exe"
+                            wDir = "C:/Windows/tracing/UltimMC/UltimMC"
+                            icon = "C:/Windows/tracing/UltimMC/UltimMC/UltimMC.exe"
+                            shell = Dispatch('WScript.Shell')
+                        shortcut = shell.CreateShortCut(path)
+                        shortcut.Targetpath = target
+                        shortcut.WorkingDirectory = wDir
+                        shortcut.IconLocation = icon
+                        shortcut.save()
+                        
                         ### DO NOT TOUCH, YOUR REGISTRY WILL EXPLODE ###
                         self.progress.setFormat("Editing your registry...")
                         self.progress.setValue(0)
@@ -234,7 +259,7 @@ class MinecraftSetup(QMainWindow):
                         winreg.CloseKey(key)
                         self.progress.setFormat("Registry edited")
                         self.progress.setValue(100)
-                        
+                    
                     self.progress.setFormat("Installation complete")
                     self.next_button.setDisabled(False)
 
