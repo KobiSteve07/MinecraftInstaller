@@ -18,6 +18,7 @@ if sys.platform == "win32":
     from win32com.client import Dispatch
 import shutil
 import jdk
+import secrets
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -31,7 +32,7 @@ class MinecraftSetup(QMainWindow):
 
         self.step = 0
         self.paid = "MultiMC"
-        self.username = ""
+        self.gamertag = ""
 
         self.title = QLabel("Welcome to the KobiWare Minecraft Client Installer!", parent=self)
         self.title.setGeometry(10, 20, 450, 25)
@@ -114,20 +115,20 @@ class MinecraftSetup(QMainWindow):
         self.move(qt_rectangle.topLeft())
 
     def handle_text_edit(self):
-        username = self.username.text()
-        if not(username):
+        self.gamertag = self.username.text()
+        if not(self.gamertag):
             self.takenText.setText("Enter a username.")
             self.next_button.setDisabled(True)
-        elif len(username) > 16:
+        elif len(self.gamertag) > 16:
             self.takenText.setText("Username is too long.")
             self.next_button.setDisabled(True)
-        elif len(username) < 3:
+        elif len(self.gamertag) < 3:
             self.takenText.setText("Username is too short.")
             self.next_button.setDisabled(True)
-        elif any(char not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_" for char in username):
+        elif any(char not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_" for char in self.gamertag):
             self.takenText.setText("Username contains invalid characters.")
             self.next_button.setDisabled(True)
-        elif requests.get(f"https://api.mojang.com/users/profiles/minecraft/{username}?"):
+        elif requests.get(f"https://api.mojang.com/users/profiles/minecraft/{self.gamertag}?"):
             self.takenText.setText("Username taken")
             self.next_button.setDisabled(True)
         else:
@@ -224,6 +225,9 @@ class MinecraftSetup(QMainWindow):
                         jdk.install('17', vendor='Azul')
                         self.replace_line("C:/Windows/tracing/KobiWare/" + self.paid + "/" + self.paid + ".cfg", 1, "JavaPath=C:/Users/" + os.getlogin() + "/.jdk/zulu17.42.19-ca-jdk17.0.7-win_x64/bin/javaw.exe")
                         self.replace_line("C:/Windows/tracing/KobiWare/" + self.paid + "/" + self.paid + ".cfg", 3, "LastHostname=" + socket.gethostname())
+                        if(self.paid == "UltimMC"):
+                            self.replace_line("C:/Windows/tracing/KobiWare/UltimMC/accounts.json", 8, "                    \"clientToken\": \""+secrets.token_hex(16)+"\",")
+                            self.replace_line("C:/Windows/tracing/KobiWare/UltimMC/accounts.json", 9, "                    \"userName\": \""+self.gamertag+"\"")
                         self.progress.setFormat("Installed java dependencies")
                         self.progress.setValue(100)
                         
