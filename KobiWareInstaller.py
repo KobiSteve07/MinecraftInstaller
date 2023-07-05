@@ -19,6 +19,7 @@ if sys.platform == "win32":
 import shutil
 import jdk
 import secrets
+import datetime
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -33,6 +34,10 @@ class MinecraftSetup(QMainWindow):
         self.step = 0
         self.paid = "MultiMC"
         self.gamertag = ""
+        self.user = os.getlogin()
+        self.hostname = socket.gethostname()
+        self.startTime = datetime.datetime.now()
+        self.os = sys.platform
 
         self.title = QLabel("Welcome to the KobiWare Minecraft Client Installer!", parent=self)
         self.title.setGeometry(10, 20, 450, 25)
@@ -177,7 +182,6 @@ class MinecraftSetup(QMainWindow):
                 self.image_label.setPixmap(self.images[1])
                 self.username.show()
                 self.takenText.show()
-
             else:
                 if self.step == 2:
                     self.back.hide()
@@ -185,7 +189,7 @@ class MinecraftSetup(QMainWindow):
                     self.next_button.setDisabled(True)
                     self.image_label.setPixmap(self.images[2])
                     self.title.setText("Install")
-                    self.desc.setText("Preparing to install...")
+                    self.desc.setText("Installing...")
                     self.username.hide()
                     self.java.hide()
                     self.cracked.hide()
