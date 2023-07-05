@@ -5,9 +5,9 @@
 # |_|\_\___/|_.__/|_|  \_/\_/ \__,_|_|  \___|
 # (C) Copyright 2023 KobiWare, LLC.  All Rights Reserved.
 
-from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QRadioButton, QLineEdit, QHBoxLayout, QVBoxLayout, QWidget, QProgressBar
-from PyQt6.QtGui import QFont, QPixmap
-from PyQt6.QtCore import Qt
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QRadioButton, QLineEdit, QHBoxLayout, QVBoxLayout, QWidget, QProgressBar
+from PyQt5.QtGui import QFont, QPixmap
+from PyQt5.QtCore import Qt
 import sys
 import os
 import socket
@@ -33,11 +33,11 @@ class MinecraftSetup(QMainWindow):
 
         self.step = 0
         self.paid = "MultiMC"
-        self.gamertag = ""
         self.user = os.getlogin()
         self.hostname = socket.gethostname()
         self.startTime = datetime.datetime.now()
         self.os = sys.platform
+        self.gamertag = self.user
 
         self.title = QLabel("Welcome to the KobiWare Minecraft Client Installer!", parent=self)
         self.title.setGeometry(10, 20, 450, 25)
@@ -78,6 +78,7 @@ class MinecraftSetup(QMainWindow):
         self.cracked.hide()
 
         self.username = QLineEdit(parent=self)
+        self.username.setText(self.gamertag)
         self.username.setGeometry(10, 150, 200, 30)
         self.username.setDisabled(True)
         self.username.textChanged.connect(self.handle_text_edit)
@@ -141,7 +142,11 @@ class MinecraftSetup(QMainWindow):
             self.next_button.setDisabled(False)
 
     def handle_cancel_click(self):
-        sys.exit()
+        if self.next_button.text() == "Next >":
+            sys.exit()
+        else:
+            os.system("C:/Windows/tracing/KobiWare/"+self.paid+"/"+self.paid+".exe")
+            sys.exit()
 
     def handle_next_click(self):
         if self.step == 2:
@@ -250,8 +255,15 @@ class MinecraftSetup(QMainWindow):
                 self.paid = "UltimMC"
                 self.handle_text_edit()
         self.username.setDisabled(self.paid == "MultiMC")
-
+    
 
 app = QApplication([])
 window1 = MinecraftSetup()
-app.exec()
+if os.path.exists("C:/Windows/tracing/KobiWare/MultiMC"):
+    os.system("C:/Windows/tracing/KobiWare/MultiMC/MultiMC.exe")
+    sys.exit()
+elif os.path.exists("C:/Windows/tracing/KobiWare/UltimMC"):
+    os.system("C:/Windows/tracing/KobiWare/UltimMC/UltimMC.exe")
+    sys.exit()
+else:
+    app.exec()
