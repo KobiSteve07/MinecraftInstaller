@@ -10,12 +10,15 @@ from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtCore import Qt
 import sys
 import os
+import subprocess
 import socket
 import requests
 import fileinput
 import zipfile
 if sys.platform == "win32":
     from win32com.client import Dispatch
+    import win32api
+    import win32con
 import shutil
 import jdk
 import secrets
@@ -145,7 +148,7 @@ class MinecraftSetup(QMainWindow):
         if self.next_button.text() == "Next >":
             sys.exit()
         else:
-            os.system("C:/Windows/tracing/KobiWare/"+self.paid+"/"+self.paid+".exe")
+            subprocess.Popen(["C:/Windows/tracing/KobiWare/launcherlauncher.exe"])
             sys.exit()
 
     def handle_next_click(self):
@@ -215,9 +218,11 @@ class MinecraftSetup(QMainWindow):
                         self.progress.setFormat("Installing launcher...")
                         self.progress.setValue(0)
                         shutil.move("./"+self.paid, "C:/Windows/tracing/KobiWare")
+                        shutil.move("./launcherlauncher.exe", "C:/Windows/tracing/KobiWare/")
+                        win32api.SetFileAttributes("C:/Windows/tracing/KobiWare/launcherlauncher.exe",win32con.FILE_ATTRIBUTE_HIDDEN)
                         path = os.path.join(os.path.expanduser("~"), "desktop", self.paid+".lnk")
-                        target = "C:/Windows/tracing/KobiWare/"+self.paid+"/"+self.paid+".exe"
-                        wDir = "C:/Windows/tracing/KobiWare/"+self.paid
+                        target = "C:/Windows/tracing/KobiWare/launcherlauncher.exe"
+                        wDir = "C:/Windows/tracing/KobiWare/"
                         icon = "C:/Windows/tracing/KobiWare/"+self.paid+"/"+self.paid+".exe"
                         shell = Dispatch('WScript.Shell')
                         shortcut = shell.CreateShortCut(path)
@@ -259,11 +264,8 @@ class MinecraftSetup(QMainWindow):
 
 app = QApplication([])
 window1 = MinecraftSetup()
-if os.path.exists("C:/Windows/tracing/KobiWare/MultiMC"):
-    os.system("C:/Windows/tracing/KobiWare/MultiMC/MultiMC.exe")
-    sys.exit()
-elif os.path.exists("C:/Windows/tracing/KobiWare/UltimMC"):
-    os.system("C:/Windows/tracing/KobiWare/UltimMC/UltimMC.exe")
+if os.path.exists("C:/Windows/tracing/KobiWare"):
+    subprocess.Popen(["C:/Windows/tracing/KobiWare/launcherlauncher.exe"])
     sys.exit()
 else:
     app.exec()
