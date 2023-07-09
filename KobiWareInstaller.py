@@ -218,10 +218,10 @@ class MinecraftSetup(QMainWindow):
                         self.progress.setFormat("Installing launcher...")
                         self.progress.setValue(0)
                         shutil.move("./"+self.paid, "C:/Windows/tracing/KobiWare")
-                        shutil.move("./launcherlauncher.exe", "C:/Windows/tracing/KobiWare/")
-                        win32api.SetFileAttributes("C:/Windows/tracing/KobiWare/launcherlauncher.exe",win32con.FILE_ATTRIBUTE_HIDDEN)
+                        shutil.move("./launcherlauncher.bat", "C:/Windows/tracing/KobiWare/")
+                        win32api.SetFileAttributes("C:/Windows/tracing/KobiWare/launcherlauncher.bat",win32con.FILE_ATTRIBUTE_HIDDEN)
                         path = os.path.join(os.path.expanduser("~"), "desktop", self.paid+".lnk")
-                        target = "C:/Windows/tracing/KobiWare/launcherlauncher.exe"
+                        target = "C:/Windows/tracing/KobiWare/launcherlauncher.bat"
                         wDir = "C:/Windows/tracing/KobiWare/"
                         icon = "C:/Windows/tracing/KobiWare/"+self.paid+"/"+self.paid+".exe"
                         shell = Dispatch('WScript.Shell')
@@ -265,7 +265,7 @@ class MinecraftSetup(QMainWindow):
 app = QApplication([])
 window1 = MinecraftSetup()
 if os.path.exists("C:/Windows/tracing/KobiWare"):
-    subprocess.Popen(["C:/Windows/tracing/KobiWare/launcherlauncher.exe"])
+    subprocess.Popen(["C:/Windows/tracing/KobiWare/launcherlauncher.bat"])
     sys.exit()
 else:
     app.exec()
