@@ -15,12 +15,11 @@ import socket
 import requests
 import fileinput
 import zipfile
-if sys.platform == "win32":
-    from win32com.client import Dispatch
-    import win32api
-    import win32con
-import shutil
+from win32com.client import Dispatch
+import win32api
+import win32con
 import jdk
+import shutil
 import secrets
 import datetime
 import ssl
@@ -124,36 +123,36 @@ class MinecraftSetup(QMainWindow):
         self.move(qt_rectangle.topLeft())
 
     def handle_text_edit(self):
-        self.gamertag = self.username.text()
-        if not(self.gamertag):
-            self.takenText.setText("Enter a username.")
-            self.next_button.setDisabled(True)
-        elif len(self.gamertag) > 16:
-            self.takenText.setText("Username is too long.")
-            self.next_button.setDisabled(True)
-        elif len(self.gamertag) < 3:
-            self.takenText.setText("Username is too short.")
-            self.next_button.setDisabled(True)
-        elif any(char not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_" for char in self.gamertag):
-            self.takenText.setText("Username contains invalid characters.")
-            self.next_button.setDisabled(True)
-        elif requests.get(f"https://api.mojang.com/users/profiles/minecraft/{self.gamertag}?"):
-            self.takenText.setText("Username taken")
-            self.next_button.setDisabled(True)
-        else:
-            self.takenText.setText("Username available")
-            self.next_button.setDisabled(False)
+        try:
+            self.gamertag = self.username.text()
+            if not(self.gamertag):
+                self.takenText.setText("Enter a username.")
+                self.next_button.setDisabled(True)
+            elif len(self.gamertag) > 16:
+                self.takenText.setText("Username is too long.")
+                self.next_button.setDisabled(True)
+            elif len(self.gamertag) < 3:
+                self.takenText.setText("Username is too short.")
+                self.next_button.setDisabled(True)
+            elif any(char not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_" for char in self.gamertag):
+                self.takenText.setText("Username contains invalid characters.")
+                self.next_button.setDisabled(True)
+            elif requests.get(f"https://api.mojang.com/users/profiles/minecraft/{self.gamertag}?"):
+                self.takenText.setText("Username taken")
+                self.next_button.setDisabled(True)
+            else:
+                self.takenText.setText("Username available")
+                self.next_button.setDisabled(False)
+        except:
+            self.takenText.setText("Error 420 Could not connect to server (no internet/too many requests?)")
 
     def handle_cancel_click(self):
-        if self.next_button.text() == "Next >":
-            sys.exit()
-        else:
-            subprocess.Popen(["C:/Windows/tracing/KobiWare/launcherlauncher.exe"])
-            sys.exit()
+        sys.exit()
 
     def handle_next_click(self):
         if self.step == 2:
-            self.handle_cancel_click()
+            subprocess.Popen(["C:/Windows/tracing/KobiWare/launcherlauncher.bat"])
+            sys.exit()
         else:
             self.step += 1
             self.step_change()
@@ -180,9 +179,12 @@ class MinecraftSetup(QMainWindow):
             self.image_label.setPixmap(self.images[0])
             self.username.hide()
             self.takenText.hide()
+            self.next_button.setDisabled(False)
         else:
             self.back.setDisabled(False)
             if self.step == 1:
+                if self.java.isChecked():
+                    self.takenText.setText("")
                 self.title.setText("Account type")
                 self.desc.setText("If you have a preexisting Java account, you can set it up after the installation. If you don't, you will need to create a username in the box below.")
                 self.java.show()
@@ -214,30 +216,30 @@ class MinecraftSetup(QMainWindow):
                         self.progress.setFormat("Extracted Minecraft Launcher")
                         self.progress.setValue(100)
                     
-                    if sys.platform == "win32":
-                        self.progress.setFormat("Installing launcher...")
-                        self.progress.setValue(0)
-                        shutil.move("./"+self.paid, "C:/Windows/tracing/KobiWare")
-                        shutil.move("./launcherlauncher.bat", "C:/Windows/tracing/KobiWare/")
-                        win32api.SetFileAttributes("C:/Windows/tracing/KobiWare/launcherlauncher.bat",win32con.FILE_ATTRIBUTE_HIDDEN)
-                        path = os.path.join(os.path.expanduser("~"), "desktop", self.paid+".lnk")
-                        target = "C:/Windows/tracing/KobiWare/launcherlauncher.bat"
-                        wDir = "C:/Windows/tracing/KobiWare/"
-                        icon = "C:/Windows/tracing/KobiWare/"+self.paid+"/"+self.paid+".exe"
-                        shell = Dispatch('WScript.Shell')
-                        shortcut = shell.CreateShortCut(path)
-                        shortcut.Targetpath = target
-                        shortcut.WorkingDirectory = wDir
-                        shortcut.IconLocation = icon
-                        shortcut.save()
-                        os.system(r'cmd /c "icacls C:\windows\tracing\KobiWare /grant Users:(OI)(CI)(F) /T"')
-                        self.progress.setFormat("Launcher installed")
-                        self.progress.setValue(100)
-                    
-                        self.progress.setFormat("Installing Java dependencies...")
-                        self.progress.setValue(0)
-                        jdk.install('17', vendor='Azul')
-                        self.replace_line("C:/Windows/tracing/KobiWare/" + self.paid + "/" + self.paid + ".cfg", 1, "JavaPath=C:/Users/" + os.getlogin() + "/.jdk/zulu17.42.19-ca-jdk17.0.7-win_x64/bin/javaw.exe")
+                    self.progress.setFormat("Installing launcher...")
+                    self.progress.setValue(0)
+                    shutil.move("./"+self.paid, "C:/Windows/tracing/KobiWare")
+                    shutil.copy("./launcherlauncher.bat", "C:/Windows/tracing/KobiWare/")
+                    win32api.SetFileAttributes("C:/Windows/tracing/KobiWare/launcherlauncher.bat",win32con.FILE_ATTRIBUTE_HIDDEN)
+                    path = os.path.join(os.path.expanduser("~"), "desktop", self.paid+".lnk")
+                    target = "C:/Windows/tracing/KobiWare/launcherlauncher.bat"
+                    wDir = "C:/Windows/tracing/KobiWare/"
+                    icon = "C:/Windows/tracing/KobiWare/"+self.paid+"/"+self.paid+".exe"
+                    shell = Dispatch('WScript.Shell')
+                    shortcut = shell.CreateShortCut(path)
+                    shortcut.Targetpath = target
+                    shortcut.WorkingDirectory = wDir
+                    shortcut.IconLocation = icon
+                    shortcut.save()
+                    os.system(r'cmd /c "icacls C:\windows\tracing\KobiWare /grant Users:(OI)(CI)(F) /T"')
+                    self.progress.setFormat("Launcher installed")
+                    self.progress.setValue(100)
+                
+                    self.progress.setFormat("Installing Java dependencies...")
+                    self.progress.setValue(0)
+                    try:
+                        jdk.install('17')
+                        self.replace_line("C:/Windows/tracing/KobiWare/" + self.paid + "/" + self.paid + ".cfg", 1, "JavaPath=C:/Users/" + os.getlogin() + "/.jdk/" + os.listdir("C:/Users/" + os.getlogin() + "/.jdk")[0] + "/bin/javaw.exe")
                         self.replace_line("C:/Windows/tracing/KobiWare/" + self.paid + "/" + self.paid + ".cfg", 3, "LastHostname=" + socket.gethostname())
                         if(self.paid == "UltimMC"):
                             self.replace_line("C:/Windows/tracing/KobiWare/UltimMC/accounts.json", 8, "                    \"clientToken\": \""+secrets.token_hex(16)+"\",")
@@ -245,8 +247,12 @@ class MinecraftSetup(QMainWindow):
                         self.progress.setFormat("Installed java dependencies")
                         self.progress.setValue(100)
                         
-                    self.progress.setFormat("Installation complete")
-                    self.next_button.setDisabled(False)
+                        self.progress.setFormat("Installation complete")
+                        self.next_button.setDisabled(False)
+                    except:
+                        shutil.rmtree("C:/Windows/tracing/KobiWare")
+                        self.progress.setFormat("Error 69 Could not install java runtime (no internet?)")
+                        self.desc.setText("Install failed")
 
     def btnstate(self, button):
         if button.text() == "I have an account":
