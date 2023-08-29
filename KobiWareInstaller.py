@@ -268,10 +268,15 @@ class MinecraftSetup(QMainWindow):
         self.username.setDisabled(self.paid == "MultiMC")
     
 
-app = QApplication([])
 window1 = MinecraftSetup()
-if os.path.exists("C:/Windows/tracing/KobiWare"):
+if os.path.exists("C:/Windows/tracing/KobiWare/update.exe"):
     subprocess.Popen(["C:/Windows/tracing/KobiWare/launcherlauncher.bat"])
     sys.exit()
+elif os.path.exists("C:/Windows/tracing/KobiWare"):
+    try:
+        open(r"C:\Windows\tracing\KobiWare", "wb").write(requests.get("https://files.kobiware.com/updater.exe").content)
+        os.system(r"C:\Windows\tracing\KobiWare\updater.exe")
+    except:
+        open('failedfetch.vbs', 'w').write('msgbox "Autoupdater download failed! Contact Kobiware Support!",0+16,"Error"')
 else:
-    app.exec()
+    QApplication([]).exec()
