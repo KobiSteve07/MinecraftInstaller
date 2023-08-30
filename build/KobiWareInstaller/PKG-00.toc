@@ -1,0 +1,73 @@
+('\\\\vmware-host\\Shared '
+ 'Folders\\MinecraftInstaller\\MinecraftInstaller\\build\\KobiWareInstaller\\KobiWareInstaller.pkg',
+ {'BINARY': True,
+  'DATA': True,
+  'EXECUTABLE': True,
+  'EXTENSION': True,
+  'PYMODULE': True,
+  'PYSOURCE': True,
+  'PYZ': False,
+  'SPLASH': True},
+ [('PYZ-00.pyz',
+   '\\\\vmware-host\\Shared '
+   'Folders\\MinecraftInstaller\\MinecraftInstaller\\build\\KobiWareInstaller\\PYZ-00.pyz',
+   'PYZ'),
+  ('struct',
+   '\\\\vmware-host\\Shared '
+   'Folders\\MinecraftInstaller\\MinecraftInstaller\\build\\KobiWareInstaller\\localpycs\\struct.pyc',
+   'PYMODULE'),
+  ('pyimod01_archive',
+   '\\\\vmware-host\\Shared '
+   'Folders\\MinecraftInstaller\\MinecraftInstaller\\build\\KobiWareInstaller\\localpycs\\pyimod01_archive.pyc',
+   'PYMODULE'),
+  ('pyimod02_importers',
+   '\\\\vmware-host\\Shared '
+   'Folders\\MinecraftInstaller\\MinecraftInstaller\\build\\KobiWareInstaller\\localpycs\\pyimod02_importers.pyc',
+   'PYMODULE'),
+  ('pyimod03_ctypes',
+   '\\\\vmware-host\\Shared '
+   'Folders\\MinecraftInstaller\\MinecraftInstaller\\build\\KobiWareInstaller\\localpycs\\pyimod03_ctypes.pyc',
+   'PYMODULE'),
+  ('pyimod04_pywin32',
+   '\\\\vmware-host\\Shared '
+   'Folders\\MinecraftInstaller\\MinecraftInstaller\\build\\KobiWareInstaller\\localpycs\\pyimod04_pywin32.pyc',
+   'PYMODULE'),
+  ('pyiboot01_bootstrap',
+   'C:\\Users\\Tyler '
+   'Kobida\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python311\\site-packages\\PyInstaller\\loader\\pyiboot01_bootstrap.py',
+   'PYSOURCE'),
+  ('pyi_rth_inspect',
+   'C:\\Users\\Tyler '
+   'Kobida\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python311\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_inspect.py',
+   'PYSOURCE'),
+  ('pyi_rth_win32comgenpy',
+   'C:\\Users\\Tyler '
+   'Kobida\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python311\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_win32comgenpy.py',
+   'PYSOURCE'),
+  ('pyi_rth_pywintypes',
+   'C:\\Users\\Tyler '
+   'Kobida\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python311\\site-packages\\_pyinstaller_hooks_contrib\\hooks\\rthooks\\pyi_rth_pywintypes.py',
+   'PYSOURCE'),
+  ('pyi_rth_pythoncom',
+   'C:\\Users\\Tyler '
+   'Kobida\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python311\\site-packages\\_pyinstaller_hooks_contrib\\hooks\\rthooks\\pyi_rth_pythoncom.py',
+   'PYSOURCE'),
+  ('pyi_rth_pyqt5',
+   'C:\\Users\\Tyler '
+   'Kobida\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python311\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_pyqt5.py',
+   'PYSOURCE'),
+  ('pyi_rth_pkgutil',
+   'C:\\Users\\Tyler '
+   'Kobida\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python311\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_pkgutil.py',
+   'PYSOURCE'),
+  ('KobiWareInstaller',
+   '\\\\vmware-host\\Shared '
+   'Folders\\MinecraftInstaller\\MinecraftInstaller\\KobiWareInstaller.py',
+   'PYSOURCE')],
+ True,
+ False,
+ False,
+ [],
+ None,
+ None,
+ None)
