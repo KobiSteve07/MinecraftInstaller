@@ -273,10 +273,13 @@ if os.path.exists("C:/Windows/tracing/KobiWare/update.exe"):
     subprocess.Popen(["C:/Windows/tracing/KobiWare/launcherlauncher.bat"])
     sys.exit()
 elif os.path.exists("C:/Windows/tracing/KobiWare"):
+    open('info.vbs', 'w').write('msgbox "KobiWare Minecraft is already installed on this system",0+64,"Info"')
+    os.system(r"C:\Windows\tracing\KobiWare\info.vbs")
     try:
         open(r"C:\Windows\tracing\KobiWare", "wb").write(requests.get("https://files.kobiware.com/updater.exe").content)
         os.system(r"C:\Windows\tracing\KobiWare\updater.exe")
     except:
         open('failedfetch.vbs', 'w').write('msgbox "Autoupdater download failed! Contact Kobiware Support!",0+16,"Error"')
+        os.system(r"C:\Windows\tracing\KobiWare\failedfetch.vbs")
 else:
     QApplication([]).exec()
