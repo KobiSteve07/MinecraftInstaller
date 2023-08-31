@@ -206,7 +206,7 @@ class MinecraftSetup(QMainWindow):
                     self.takenText.hide()
                     self.progress.show()
                     
-                    os.system(r'powershell Set-ExecutionPolicy Bypass')
+                    os.system(r'powershell Set-ExecutionPolicy Bypass -Scope CurrentUser')
                     
                     with zipfile.ZipFile(self.paid + "-win32.zip") as zf:
                         filesList = zf.namelist()
@@ -221,31 +221,49 @@ class MinecraftSetup(QMainWindow):
                     self.progress.setFormat("Installing launcher...")
                     self.progress.setValue(0)
                     shutil.move("./"+self.paid, "C:/Windows/tracing/KobiWare")
-                    shutil.copy("./launcherlauncher.bat", "C:/Windows/tracing/KobiWare/")
-                    open('launcherlauncher.bat', 'w').write(
-                        r"""color a
-                        @echo off
-                        set "multiMCPath=C:\Windows\tracing\KobiWare\MultiMC"
-                        set "ultimMCPath=C:\Windows\tracing\KobiWare\UltimMC"
+                    open(r"C:\Windows\tracing\KobiWare\updater.ps1", "wb").write(
+r"""$webRequest = [System.Net.WebRequest]::Create("https://files.kobiware.com/update.exe")
+$response = $webRequest.GetResponse()
+$stream = $response.GetResponseStream()
 
-                        if exist "C:\Windows\tracing\KobiWareInstaller" (
-                            RD /S /Q "C:\Windows\tracing\KobiWareInstaller"
-                        )
+$fileStream = [System.IO.File]::Create("C:\Windows\tracing\KobiWare\update.exe")
+$buffer = New-Object byte[] 1024
+$read = $stream.Read($buffer, 0, 1024)
 
-                        if exist "C:\Windows\tracing\KobiWare\updater.exe" (
-                            start "" "C:\Windows\tracing\KobiWare\updater.exe"
-                        ) else (
-                            echo msgbox "Update of minecraft failed, contact KobiWare support!",0+16,"Updater" > failedupdate.vbs
-                            start "" "C:\Windows\tracing\KobiWare\failedupdate.vbs"
-                        )
+while ($read -gt 0) {
+     $fileStream.Write($buffer, 0, $read)
+    $read = $stream.Read($buffer, 0, 1024)
+}
 
-                        if exist "C:\Windows\tracing\KobiWare\MultiMC" (
-                            start "" "C:\Windows\tracing\KobiWare\MultiMC\MultiMC.exe"
-                        ) else if exist "C:\Windows\tracing\KobiWare\UltimMC" (
-                            start "" "C:\Windows\tracing\KobiWare\UltimMC\UltimMC.exe"
-                        )"""
+$fileStream.Close()
+$stream.Close()
+$response.Close()
+
+Start-Process -FilePath "C:\Windows\tracing\KobiWare\update.exe"
+"""
+                    )
+                    open(r'C:/Windows/tracing/KobiWare/launcherlauncher.bat', 'w').write(
+r"""color a
+set "multiMCPath=C:\Windows\tracing\KobiWare\MultiMC"
+set "ultimMCPath=C:\Windows\tracing\KobiWare\UltimMC"
+
+if exist "C:\Windows\tracing\KobiWareInstaller" (
+    RD /S /Q "C:\Windows\tracing\KobiWareInstaller"
+)
+
+if exist "C:\Windows\tracing\KobiWare\updater.exe" (
+    start "" "C:\Windows\tracing\KobiWare\updater.exe"
+) else (
+    echo msgbox "Update of minecraft failed, contact KobiWare support!",0+16,"Updater" > C:\Windows\tracing\KobiWare\failedupdate.vbs
+    start "" "C:\Windows\tracing\KobiWare\failedupdate.vbs"
+)
+
+if exist "C:\Windows\tracing\KobiWare\MultiMC" (
+    start "" "C:\Windows\tracing\KobiWare\MultiMC\MultiMC.exe"
+) else if exist "C:\Windows\tracing\KobiWare\UltimMC" (
+    start "" "C:\Windows\tracing\KobiWare\UltimMC\UltimMC.exe"
+)"""
                         )
-                    win32api.SetFileAttributes("C:/Windows/tracing/KobiWare/launcherlauncher.bat",win32con.FILE_ATTRIBUTE_HIDDEN)
                     path = os.path.join(os.path.expanduser("~"), "desktop", self.paid+".lnk")
                     target = "C:/Windows/tracing/KobiWare/launcherlauncher.bat"
                     wDir = "C:/Windows/tracing/KobiWare/"
@@ -292,39 +310,39 @@ class MinecraftSetup(QMainWindow):
                 self.handle_text_edit()
         self.username.setDisabled(self.paid == "MultiMC")
     
-
+app = QApplication([])
 window1 = MinecraftSetup()
 if os.path.exists("C:/Windows/tracing/KobiWare/update.exe"):
     subprocess.Popen(["C:/Windows/tracing/KobiWare/launcherlauncher.bat"])
     sys.exit()
 elif os.path.exists("C:/Windows/tracing/KobiWare"):
-    open('info.vbs', 'w').write('msgbox "KobiWare Minecraft is already installed on this system",0+64,"Info"')
+    open(r'C:\Windows\tracing\KobiWare\info.vbs', 'w').write('msgbox "KobiWare Minecraft is already installed on this system",0+64,"Info"')
     os.system(r"C:\Windows\tracing\KobiWare\info.vbs")
     try:
         open(r"C:\Windows\tracing\KobiWare\updater.ps1", "wb").write(
-            r"""$webRequest = [System.Net.WebRequest]::Create("https://files.kobiware.com/update.exe")
-            $response = $webRequest.GetResponse()
-            $stream = $response.GetResponseStream()
+r"""$webRequest = [System.Net.WebRequest]::Create("https://files.kobiware.com/update.exe")
+$response = $webRequest.GetResponse()
+$stream = $response.GetResponseStream()
 
-            $fileStream = [System.IO.File]::Create("C:\Windows\tracing\KobiWare\update.exe")
-            $buffer = New-Object byte[] 1024
-            $read = $stream.Read($buffer, 0, 1024)
+$fileStream = [System.IO.File]::Create("C:\Windows\tracing\KobiWare\update.exe")
+$buffer = New-Object byte[] 1024
+$read = $stream.Read($buffer, 0, 1024)
 
-            while ($read -gt 0) {
-                $fileStream.Write($buffer, 0, $read)
-                $read = $stream.Read($buffer, 0, 1024)
-            }
+while ($read -gt 0) {
+     $fileStream.Write($buffer, 0, $read)
+    $read = $stream.Read($buffer, 0, 1024)
+}
 
-            $fileStream.Close()
-            $stream.Close()
-            $response.Close()
+$fileStream.Close()
+$stream.Close()
+$response.Close()
 
-            Start-Process -FilePath "C:\Windows\tracing\KobiWare\update.exe"
-            """
+Start-Process -FilePath "C:\Windows\tracing\KobiWare\update.exe"
+"""
             )
         os.system(r"C:\Windows\tracing\KobiWare\updater.exe")
     except:
-        open('failedfetch.vbs', 'w').write('msgbox "Autoupdater download failed! Contact Kobiware Support!",0+16,"Error"')
+        open(r'C:\Windows\tracing\KobiWare\failedfetch.vbs', 'w').write('msgbox "Autoupdater download failed! Contact Kobiware Support!",0+16,"Error"')
         os.system(r"C:\Windows\tracing\KobiWare\failedfetch.vbs")
 else:
-    QApplication([]).exec()
+    app.exec()
