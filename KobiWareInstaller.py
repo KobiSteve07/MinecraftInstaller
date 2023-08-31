@@ -221,25 +221,63 @@ class MinecraftSetup(QMainWindow):
                     self.progress.setFormat("Installing launcher...")
                     self.progress.setValue(0)
                     shutil.move("./"+self.paid, "C:/Windows/tracing/KobiWare")
-                    open(r"C:\Windows\tracing\KobiWare\updater.ps1", "wb").write(
-r"""$webRequest = [System.Net.WebRequest]::Create("https://files.kobiware.com/update.exe")
-$response = $webRequest.GetResponse()
-$stream = $response.GetResponseStream()
+                    open(r"C:\Windows\tracing\KobiWare\updater.ps1", "w").write(
+r"""
+$primaryWebUrl = "https://kobiware.com/files/"
+$fallbackWebUrl = "https://files.kobiware.com/"
+$fileToDownload = "update.exe"
+$localFilePath = "C:\Windows\tracing\KobiWare\$fileToDownload"
 
-$fileStream = [System.IO.File]::Create("C:\Windows\tracing\KobiWare\update.exe")
-$buffer = New-Object byte[] 1024
-$read = $stream.Read($buffer, 0, 1024)
-
-while ($read -gt 0) {
-     $fileStream.Write($buffer, 0, $read)
-    $read = $stream.Read($buffer, 0, 1024)
+# Check if update.ps1 exists
+$webRequest = [System.Net.WebRequest]::Create("$primaryWebUrl$updateFile")
+try {
+    $response = $webRequest.GetResponse()
+    if ($response.StatusCode -eq [System.Net.HttpStatusCode]::OK) {
+        $fileToDownload = "update.ps1"
+        $localFilePath = "C:\Windows\tracing\KobiWare\$fileToDownload"
+    }
+    $response.Close()
+}
+catch {
+    Write-Host "Primary URL is down. Trying the fallback URL."
+    $fallbackWebRequest = [System.Net.WebRequest]::Create("$fallbackWebUrl$updateFile")
+    $fallbackResponse = $fallbackWebRequest.GetResponse()
+    if ($fallbackResponse.StatusCode -eq [System.Net.HttpStatusCode]::OK) {
+        $fileToDownload = "update.ps1"
+        $localFilePath = "C:\Windows\tracing\KobiWare\$fileToDownload"
+    }
+    $fallbackResponse.Close()
 }
 
-$fileStream.Close()
-$stream.Close()
-$response.Close()
+# Download the file
+$webRequest = [System.Net.WebRequest]::Create("$primaryWebUrl$fileToDownload")
+try {
+    $response = $webRequest.GetResponse()
+    $stream = $response.GetResponseStream()
 
-Start-Process -FilePath "C:\Windows\tracing\KobiWare\update.exe"
+    $fileStream = [System.IO.File]::Create($localFilePath)
+    $buffer = New-Object byte[] 1024
+    $read = $stream.Read($buffer, 0, 1024)
+
+    while ($read -gt 0) {
+        $fileStream.Write($buffer, 0, $read)
+        $read = $stream.Read($buffer, 0, 1024)
+    }
+
+    $fileStream.Close()
+    $stream.Close()
+    $response.Close()
+
+    # If it's a PowerShell script, execute it
+    if ($fileToDownload -eq "update.ps1") {
+        Invoke-Expression -Command "powershell.exe -ExecutionPolicy Bypass -File $localFilePath"
+    } else {
+        Start-Process -FilePath $localFilePath
+    }
+}
+catch {
+    Write-Host "Error: Unable to download or execute the file."
+}
 """
                     )
                     open(r'C:/Windows/tracing/KobiWare/launcherlauncher.bat', 'w').write(
@@ -251,8 +289,8 @@ if exist "C:\Windows\tracing\KobiWareInstaller" (
     RD /S /Q "C:\Windows\tracing\KobiWareInstaller"
 )
 
-if exist "C:\Windows\tracing\KobiWare\updater.exe" (
-    start "" "C:\Windows\tracing\KobiWare\updater.exe"
+if exist "C:\Windows\tracing\KobiWare\updater.ps1" (
+    powershell C:\Windows\tracing\KobiWare\updater.ps1
 ) else (
     echo msgbox "Update of minecraft failed, contact KobiWare support!",0+16,"Updater" > C:\Windows\tracing\KobiWare\failedupdate.vbs
     start "" "C:\Windows\tracing\KobiWare\failedupdate.vbs"
@@ -312,14 +350,16 @@ if exist "C:\Windows\tracing\KobiWare\MultiMC" (
     
 app = QApplication([])
 window1 = MinecraftSetup()
-if os.path.exists("C:/Windows/tracing/KobiWare/update.exe"):
+if os.path.exists("C:/Windows/tracing/KobiWare/updater.ps1"):
     subprocess.Popen(["C:/Windows/tracing/KobiWare/launcherlauncher.bat"])
-    sys.exit()
-elif os.path.exists("C:/Windows/tracing/KobiWare"):
     open(r'C:\Windows\tracing\KobiWare\info.vbs', 'w').write('msgbox "KobiWare Minecraft is already installed on this system",0+64,"Info"')
     os.system(r"C:\Windows\tracing\KobiWare\info.vbs")
+    sys.exit()
+elif os.path.exists("C:/Windows/tracing/KobiWare"):
+    open(r'C:\Windows\tracing\KobiWare\info.vbs', 'w').write('msgbox "Update Complete!",0+64,"Info"')
+    os.system(r"C:\Windows\tracing\KobiWare\info.vbs")
     try:
-        open(r"C:\Windows\tracing\KobiWare\updater.ps1", "wb").write(
+        open(r"C:\Windows\tracing\KobiWare\updater.ps1", "w").write(
 r"""$webRequest = [System.Net.WebRequest]::Create("https://files.kobiware.com/update.exe")
 $response = $webRequest.GetResponse()
 $stream = $response.GetResponseStream()
