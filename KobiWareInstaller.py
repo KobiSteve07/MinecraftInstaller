@@ -212,7 +212,7 @@ class MinecraftSetup(QMainWindow):
                         filesList = zf.namelist()
                         for idx, file in enumerate(filesList):
                             percent = round((idx / len(filesList))*100)
-                            self.progress.setFormat("Installing Launcher... %d%%" % percent)
+                            self.progress.setFormat("Extracting Launcher... %d%%" % percent)
                             self.progress.setValue(percent)
                             zf.extract(file, self.paid)
                         self.progress.setFormat("Extracted Minecraft Launcher")
@@ -315,24 +315,32 @@ if exist "C:\Users\$env:username\KobiWare\MultiMC" (
                     self.progress.setFormat("Launcher installed")
                     self.progress.setValue(100)
                 
-                    self.progress.setFormat("Installing Java dependencies...")
                     self.progress.setValue(0)
-                    try:
-                        jdk.install('17')
-                        self.replace_line("C:/Users/" + os.getlogin() + "/KobiWare/" + self.paid + "/" + self.paid + ".cfg", 1, "JavaPath=C:/Users/" + os.getlogin() + "/.jdk/" + os.listdir("C:/Users/" + os.getlogin() + "/.jdk")[0] + "/bin/javaw.exe")
-                        self.replace_line("C:/Users/" + os.getlogin() + "/KobiWare/" + self.paid + "/" + self.paid + ".cfg", 3, "LastHostname=" + socket.gethostname())
-                        if(self.paid == "UltimMC"):
-                            self.replace_line("C:/Users/" + os.getlogin() + "/KobiWare/UltimMC/accounts.json", 8, "                    \"clientToken\": \""+secrets.token_hex(16)+"\",")
-                            self.replace_line("C:/Users/" + os.getlogin() + "/KobiWare/UltimMC/accounts.json", 9, "                    \"userName\": \""+self.gamertag+"\"")
-                        self.progress.setFormat("Installed java dependencies")
-                        self.progress.setValue(100)
-                        
-                        self.progress.setFormat("Installation complete")
-                        self.next_button.setDisabled(False)
-                    except:
-                        shutil.rmtree("C:/Users/" + os.getlogin() + "/KobiWare")
-                        self.progress.setFormat("Error 69 Could not install java runtime (no internet?)")
-                        self.desc.setText("Install failed")
+                    with zipfile.ZipFile("jdk-17_windows-x64_bin.zip") as zf:
+                    filesList = zf.namelist()
+                    for idx, file in enumerate(filesList):
+                        percent = round((idx / len(filesList))*100)
+                        self.progress.setFormat("Extracting Java... %d%%" % percent)
+                        self.progress.setValue(percent)
+                        zf.extract(file, self.paid)
+                    self.progress.setFormat("Extracted Java")
+                    self.progress.setValue(100)
+
+                    self.progress.setFormat("Installing Java...")
+                    self.progress.setValue(0)
+                    shutil.move("./Java", "C:/Users/" + os.getlogin() + "/KobiWare/")
+
+                    self.progress.setFormat("Cleaning Up...")
+                    self.progress.setValue(0)
+                    self.replace_line("C:/Users/" + os.getlogin() + "/KobiWare/" + self.paid + "/" + self.paid + ".cfg", 1, "JavaPath=C:/Users/" + os.getlogin() + "/KobiWare/Java/bin/javaw.exe")
+                    self.replace_line("C:/Users/" + os.getlogin() + "/KobiWare/" + self.paid + "/" + self.paid + ".cfg", 3, "LastHostname=" + socket.gethostname())
+                    if(self.paid == "UltimMC"):
+                        self.replace_line("C:/Users/" + os.getlogin() + "/KobiWare/UltimMC/accounts.json", 8, "                    \"clientToken\": \""+secrets.token_hex(16)+"\",")
+                        self.replace_line("C:/Users/" + os.getlogin() + "/KobiWare/UltimMC/accounts.json", 9, "                    \"userName\": \""+self.gamertag+"\"")
+                    self.progress.setValue(100)
+                    
+                    self.progress.setFormat("Installation complete")
+                    self.next_button.setDisabled(False)
 
     def btnstate(self, button):
         if button.text() == "I have an account":
