@@ -151,7 +151,7 @@ class MinecraftSetup(QMainWindow):
 
     def handle_next_click(self):
         if self.step == 2:
-            subprocess.Popen(["C:/Windows/tracing/KobiWare/launcherlauncher.bat"])
+            subprocess.Popen(["C:/Users/" + os.getlogin() + "/KobiWare/launcherlauncher.bat"])
             sys.exit()
         else:
             self.step += 1
@@ -220,13 +220,13 @@ class MinecraftSetup(QMainWindow):
                     
                     self.progress.setFormat("Installing launcher...")
                     self.progress.setValue(0)
-                    shutil.move("./"+self.paid, "C:/Windows/tracing/KobiWare")
-                    open(r"C:\Windows\tracing\KobiWare\updater.ps1", "w").write(
+                    shutil.move("./"+self.paid, "C:/Users/" + os.getlogin() + "/KobiWare")
+                    open("C:\\Users\\" + os.getlogin() + "\\KobiWare\\updater.ps1", "w").write(
 r"""
 $primaryWebUrl = "https://kobiware.com/files/"
 $fallbackWebUrl = "https://files.kobiware.com/"
 $fileToDownload = "update.exe"
-$localFilePath = "C:\Windows\tracing\KobiWare\$fileToDownload"
+$localFilePath = "C:\Users\$env:username\KobiWare\$fileToDownload"
 
 # Check if update.ps1 exists
 $webRequest = [System.Net.WebRequest]::Create("$primaryWebUrl$updateFile")
@@ -234,7 +234,7 @@ try {
     $response = $webRequest.GetResponse()
     if ($response.StatusCode -eq [System.Net.HttpStatusCode]::OK) {
         $fileToDownload = "update.ps1"
-        $localFilePath = "C:\Windows\tracing\KobiWare\$fileToDownload"
+        $localFilePath = "C:\Users\$env:username\KobiWare\$fileToDownload"
     }
     $response.Close()
 }
@@ -244,7 +244,7 @@ catch {
     $fallbackResponse = $fallbackWebRequest.GetResponse()
     if ($fallbackResponse.StatusCode -eq [System.Net.HttpStatusCode]::OK) {
         $fileToDownload = "update.ps1"
-        $localFilePath = "C:\Windows\tracing\KobiWare\$fileToDownload"
+        $localFilePath = "C:\Users\$env:username\KobiWare\$fileToDownload"
     }
     $fallbackResponse.Close()
 }
@@ -280,39 +280,38 @@ catch {
 }
 """
                     )
-                    open(r'C:/Windows/tracing/KobiWare/launcherlauncher.bat', 'w').write(
+                    open(r"C:/Users/" + os.getlogin() + "/KobiWare/launcherlauncher.bat", 'w').write(
 r"""color a
-set "multiMCPath=C:\Windows\tracing\KobiWare\MultiMC"
-set "ultimMCPath=C:\Windows\tracing\KobiWare\UltimMC"
+set "multiMCPath=C:\Users\$env:username\KobiWare\MultiMC"
+set "ultimMCPath=C:\Users\$env:username\KobiWare\UltimMC"
 
-if exist "C:\Windows\tracing\KobiWareInstaller" (
-    RD /S /Q "C:\Windows\tracing\KobiWareInstaller"
+if exist "C:\Users\$env:username\KobiWareInstaller" (
+    RD /S /Q "C:\Users\$env:username\KobiWareInstaller"
 )
 
-if exist "C:\Windows\tracing\KobiWare\updater.ps1" (
-    powershell C:\Windows\tracing\KobiWare\updater.ps1
+if exist "C:\Users\$env:username\KobiWare\updater.ps1" (
+    powershell C:\Users\$env:username\KobiWare\updater.ps1
 ) else (
-    echo msgbox "Update of minecraft failed, contact KobiWare support!",0+16,"Updater" > C:\Windows\tracing\KobiWare\failedupdate.vbs
-    start "" "C:\Windows\tracing\KobiWare\failedupdate.vbs"
+    echo msgbox "Update of minecraft failed, contact KobiWare support!",0+16,"Updater" > C:\Users\$env:username\KobiWare\failedupdate.vbs
+    start "" "C:\Users\$env:username\KobiWare\failedupdate.vbs"
 )
 
-if exist "C:\Windows\tracing\KobiWare\MultiMC" (
-    start "" "C:\Windows\tracing\KobiWare\MultiMC\MultiMC.exe"
-) else if exist "C:\Windows\tracing\KobiWare\UltimMC" (
-    start "" "C:\Windows\tracing\KobiWare\UltimMC\UltimMC.exe"
+if exist "C:\Users\$env:username\KobiWare\MultiMC" (
+    start "" "C:\Users\$env:username\KobiWare\MultiMC\MultiMC.exe"
+) else if exist "C:\Users\$env:username\KobiWare\UltimMC" (
+    start "" "C:\Users\$env:username\KobiWare\UltimMC\UltimMC.exe"
 )"""
                         )
                     path = os.path.join(os.path.expanduser("~"), "desktop", self.paid+".lnk")
-                    target = "C:/Windows/tracing/KobiWare/launcherlauncher.bat"
-                    wDir = "C:/Windows/tracing/KobiWare/"
-                    icon = "C:/Windows/tracing/KobiWare/"+self.paid+"/"+self.paid+".exe"
+                    target = "C:/Users/" + os.getlogin() + "/KobiWare/launcherlauncher.bat"
+                    wDir = "C:/Users/" + os.getlogin() + "/KobiWare/"
+                    icon = "C:/Users/" + os.getlogin() + "/KobiWare/"+self.paid+"/"+self.paid+".exe"
                     shell = Dispatch('WScript.Shell')
                     shortcut = shell.CreateShortCut(path)
                     shortcut.Targetpath = target
                     shortcut.WorkingDirectory = wDir
                     shortcut.IconLocation = icon
                     shortcut.save()
-                    os.system(r'cmd /c "icacls C:\windows\tracing\KobiWare /grant Users:(OI)(CI)(F) /T"')
                     self.progress.setFormat("Launcher installed")
                     self.progress.setValue(100)
                 
@@ -320,18 +319,18 @@ if exist "C:\Windows\tracing\KobiWare\MultiMC" (
                     self.progress.setValue(0)
                     try:
                         jdk.install('17')
-                        self.replace_line("C:/Windows/tracing/KobiWare/" + self.paid + "/" + self.paid + ".cfg", 1, "JavaPath=C:/Users/" + os.getlogin() + "/.jdk/" + os.listdir("C:/Users/" + os.getlogin() + "/.jdk")[0] + "/bin/javaw.exe")
-                        self.replace_line("C:/Windows/tracing/KobiWare/" + self.paid + "/" + self.paid + ".cfg", 3, "LastHostname=" + socket.gethostname())
+                        self.replace_line("C:/Users/" + os.getlogin() + "/KobiWare/" + self.paid + "/" + self.paid + ".cfg", 1, "JavaPath=C:/Users/" + os.getlogin() + "/.jdk/" + os.listdir("C:/Users/" + os.getlogin() + "/.jdk")[0] + "/bin/javaw.exe")
+                        self.replace_line("C:/Users/" + os.getlogin() + "/KobiWare/" + self.paid + "/" + self.paid + ".cfg", 3, "LastHostname=" + socket.gethostname())
                         if(self.paid == "UltimMC"):
-                            self.replace_line("C:/Windows/tracing/KobiWare/UltimMC/accounts.json", 8, "                    \"clientToken\": \""+secrets.token_hex(16)+"\",")
-                            self.replace_line("C:/Windows/tracing/KobiWare/UltimMC/accounts.json", 9, "                    \"userName\": \""+self.gamertag+"\"")
+                            self.replace_line("C:/Users/" + os.getlogin() + "/KobiWare/UltimMC/accounts.json", 8, "                    \"clientToken\": \""+secrets.token_hex(16)+"\",")
+                            self.replace_line("C:/Users/" + os.getlogin() + "/KobiWare/UltimMC/accounts.json", 9, "                    \"userName\": \""+self.gamertag+"\"")
                         self.progress.setFormat("Installed java dependencies")
                         self.progress.setValue(100)
                         
                         self.progress.setFormat("Installation complete")
                         self.next_button.setDisabled(False)
                     except:
-                        shutil.rmtree("C:/Windows/tracing/KobiWare")
+                        shutil.rmtree("C:/Users/" + os.getlogin() + "/KobiWare")
                         self.progress.setFormat("Error 69 Could not install java runtime (no internet?)")
                         self.desc.setText("Install failed")
 
@@ -350,21 +349,21 @@ if exist "C:\Windows\tracing\KobiWare\MultiMC" (
     
 app = QApplication([])
 window1 = MinecraftSetup()
-if os.path.exists("C:/Windows/tracing/KobiWare/updater.ps1"):
-    subprocess.Popen(["C:/Windows/tracing/KobiWare/launcherlauncher.bat"])
-    open(r'C:\Windows\tracing\KobiWare\info.vbs', 'w').write('msgbox "KobiWare Minecraft is already installed on this system",0+64,"Info"')
-    os.system(r"C:\Windows\tracing\KobiWare\info.vbs")
+if os.path.exists("C:/Users/" + os.getlogin() + "/KobiWare/updater.ps1"):
+    subprocess.Popen(["C:/Users/" + os.getlogin() + "/KobiWare/launcherlauncher.bat"])
+    open("C:\\Users\\" + os.getlogin() + "\\KobiWare\\info.vbs", 'w').write('msgbox "KobiWare Minecraft is already installed on this system",0+64,"Info"')
+    os.system("C:\\Users\\" + os.getlogin() + "\\KobiWare\\info.vbs")
     sys.exit()
-elif os.path.exists("C:/Windows/tracing/KobiWare"):
-    open(r'C:\Windows\tracing\KobiWare\info.vbs', 'w').write('msgbox "Update Complete!",0+64,"Info"')
-    os.system(r"C:\Windows\tracing\KobiWare\info.vbs")
+elif os.path.exists("C:/Users/" + os.getlogin() + "/KobiWare"):
+    open("C:\\Users\\" + os.getlogin() + "\\KobiWare\\info.vbs", 'w').write('msgbox "Update Complete!",0+64,"Info"')
+    os.system("C:\\Users\\" + os.getlogin() + "\\KobiWare\\info.vbs")
     try:
-        open(r"C:\Windows\tracing\KobiWare\updater.ps1", "w").write(
+        open("C:\\Users\\" + os.getlogin() + "\\KobiWare\\updater.ps1", "w").write(
 r"""$webRequest = [System.Net.WebRequest]::Create("https://files.kobiware.com/update.exe")
 $response = $webRequest.GetResponse()
 $stream = $response.GetResponseStream()
 
-$fileStream = [System.IO.File]::Create("C:\Windows\tracing\KobiWare\update.exe")
+$fileStream = [System.IO.File]::Create("C:\Users\$env:username\KobiWare\update.exe")
 $buffer = New-Object byte[] 1024
 $read = $stream.Read($buffer, 0, 1024)
 
@@ -377,12 +376,12 @@ $fileStream.Close()
 $stream.Close()
 $response.Close()
 
-Start-Process -FilePath "C:\Windows\tracing\KobiWare\update.exe"
+Start-Process -FilePath "C:\Users\$env:username\KobiWare\update.exe"
 """
             )
-        os.system(r"C:\Windows\tracing\KobiWare\updater.exe")
+        os.system("C:\\Users\\" + os.getlogin() + "\\KobiWare\\updater.exe")
     except:
-        open(r'C:\Windows\tracing\KobiWare\failedfetch.vbs', 'w').write('msgbox "Autoupdater download failed! Contact Kobiware Support!",0+16,"Error"')
-        os.system(r"C:\Windows\tracing\KobiWare\failedfetch.vbs")
+        open("C:\\Users\\" + os.getlogin() + "\\KobiWare\\failedfetch.vbs", 'w').write('msgbox "Autoupdater download failed! Contact Kobiware Support!",0+16,"Error"')
+        os.system("C:\\Users\\" + os.getlogin() + "\\KobiWare\\failedfetch.vbs")
 else:
     app.exec()
