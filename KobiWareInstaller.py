@@ -34,7 +34,7 @@ class MinecraftSetup(QMainWindow):
         self.center_window()
 
         self.step = 0
-        self.paid = "MultiMC"
+        self.paid = "PrismLauncher"
         self.user = os.getlogin()
         self.hostname = socket.gethostname()
         self.startTime = datetime.datetime.now()
@@ -293,8 +293,8 @@ if exist "C:\Users\"%username%"\KobiWare\updater.ps1" (
     start "" "C:\Users\"%username%"\KobiWare\failedupdate.vbs"
 )
 
-if exist "C:\Users\"%username%"\KobiWare\MultiMC" (
-    start "" "C:\Users\"%username%"\KobiWare\MultiMC\MultiMC.exe"
+if exist "C:\Users\"%username%"\KobiWare\prismlauncher" (
+    start "" "C:\Users\"%username%"\KobiWare\PrismLauncher\prismlauncher.exe"
 ) else if exist "C:\Users\"%username%"\KobiWare\UltimMC" (
     start "" "C:\Users\"%username%"\KobiWare\UltimMC\UltimMC.exe"
 )"""
@@ -342,7 +342,7 @@ if exist "C:\Users\"%username%"\KobiWare\MultiMC" (
     def btnstate(self, button):
         if button.text() == "I have an account":
             if button.isChecked():
-                self.paid = "MultiMC"
+                self.paid = "PrismLauncher"
                 self.takenText.setText("")
                 self.next_button.setDisabled(False)
 
@@ -350,7 +350,7 @@ if exist "C:\Users\"%username%"\KobiWare\MultiMC" (
             if button.isChecked():
                 self.paid = "UltimMC"
                 self.handle_text_edit()
-        self.username.setDisabled(self.paid == "MultiMC")
+        self.username.setDisabled(self.paid == "PrismLauncher")
     
 app = QApplication([])
 window1 = MinecraftSetup()
