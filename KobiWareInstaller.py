@@ -220,7 +220,7 @@ class MinecraftSetup(QMainWindow):
                     
                     self.progress.setFormat("Installing launcher...")
                     self.progress.setValue(0)
-                    shutil.move("./"+self.paid, "C:/Users/" + os.getlogin() + "/KobiWare")
+                    shutil.move("./"+self.paid, "C:/Users/" + os.getlogin() + "/KobiWare/")
                     open("C:\\Users\\" + os.getlogin() + "\\KobiWare\\updater.ps1", "w").write(
 r"""
 $primaryWebUrl = "https://kobiware.com/files/"
@@ -234,7 +234,7 @@ try {
     $response = $webRequest.GetResponse()
     if ($response.StatusCode -eq [System.Net.HttpStatusCode]::OK) {
         $fileToDownload = "update.ps1"
-        $localFilePath = "C:\Users\$env:username\KobiWare\$fileToDownload"
+        $localFilePath = "C:\Users\"+$env:username+"\KobiWare\$fileToDownload"
     }
     $response.Close()
 }
@@ -244,7 +244,7 @@ catch {
     $fallbackResponse = $fallbackWebRequest.GetResponse()
     if ($fallbackResponse.StatusCode -eq [System.Net.HttpStatusCode]::OK) {
         $fileToDownload = "update.ps1"
-        $localFilePath = "C:\Users\$env:username\KobiWare\$fileToDownload"
+        $localFilePath = "C:\Users\"+$env:username+"\KobiWare\$fileToDownload"
     }
     $fallbackResponse.Close()
 }
@@ -282,24 +282,21 @@ catch {
                     )
                     open(r"C:/Users/" + os.getlogin() + "/KobiWare/launcherlauncher.bat", 'w').write(
 r"""color a
-set "multiMCPath=C:\Users\$env:username\KobiWare\MultiMC"
-set "ultimMCPath=C:\Users\$env:username\KobiWare\UltimMC"
-
-if exist "C:\Users\$env:username\KobiWareInstaller" (
-    RD /S /Q "C:\Users\$env:username\KobiWareInstaller"
+if exist "C:\Users\"%username%"\KobiWareInstaller" (
+    RD /S /Q "C:\Users\"%username%"\KobiWareInstaller"
 )
 
-if exist "C:\Users\$env:username\KobiWare\updater.ps1" (
-    powershell C:\Users\$env:username\KobiWare\updater.ps1
-) else (
-    echo msgbox "Update of minecraft failed, contact KobiWare support!",0+16,"Updater" > C:\Users\$env:username\KobiWare\failedupdate.vbs
-    start "" "C:\Users\$env:username\KobiWare\failedupdate.vbs"
+if exist "C:\Users\"%username%"\KobiWare\updater.ps1" (
+    poweshell C:\Users\"%username%"\KobiWare\updater.ps1
+) else [.
+    echo msgbox "Update of minecraft failed, contact KobiWare support!",0+16,"Updater" > C:\Users\"%username%"\KobiWare\failedupdate.vbs
+    start "" "C:\Users\"%username%"\KobiWare\failedupdate.vbs"
 )
 
-if exist "C:\Users\$env:username\KobiWare\MultiMC" (
-    start "" "C:\Users\$env:username\KobiWare\MultiMC\MultiMC.exe"
-) else if exist "C:\Users\$env:username\KobiWare\UltimMC" (
-    start "" "C:\Users\$env:username\KobiWare\UltimMC\UltimMC.exe"
+if exist "C:\Users\"%username%"\KobiWare\MultiMC" (
+    start "" "C:\Users\"%username%"\KobiWare\MultiMC\MultiMC.exe"
+) else if exist "C:\Users\"%username%"\KobiWare\UltimMC" (
+    start "" "C:\Users\"%username%"\KobiWare\UltimMC\UltimMC.exe"
 )"""
                         )
                     path = os.path.join(os.path.expanduser("~"), "desktop", self.paid+".lnk")
@@ -314,7 +311,7 @@ if exist "C:\Users\$env:username\KobiWare\MultiMC" (
                     shortcut.save()
                     self.progress.setFormat("Launcher installed")
                     self.progress.setValue(100)
-                
+                    
                     self.progress.setValue(0)
                     with zipfile.ZipFile("jdk-17_windows-x64_bin.zip") as zf:
                         filesList = zf.namelist()
@@ -322,13 +319,13 @@ if exist "C:\Users\$env:username\KobiWare\MultiMC" (
                             percent = round((idx / len(filesList))*100)
                             self.progress.setFormat("Extracting Java... %d%%" % percent)
                             self.progress.setValue(percent)
-                            zf.extract(file, self.paid)
+                            zf.extract(file, "Java")
                     self.progress.setFormat("Extracted Java")
                     self.progress.setValue(100)
 
                     self.progress.setFormat("Installing Java...")
                     self.progress.setValue(0)
-                    shutil.move("./Java", "C:/Users/" + os.getlogin() + "/KobiWare/")
+                    shutil.move("./Java", "C:/Users/" + os.getlogin() + "/KobiWare")
 
                     self.progress.setFormat("Cleaning Up...")
                     self.progress.setValue(0)
@@ -371,7 +368,7 @@ r"""$webRequest = [System.Net.WebRequest]::Create("https://files.kobiware.com/up
 $response = $webRequest.GetResponse()
 $stream = $response.GetResponseStream()
 
-$fileStream = [System.IO.File]::Create("C:\Users\$env:username\KobiWare\update.exe")
+$fileStream = [System.IO.File]::Create("C:\Users\"+$env:username+"\KobiWare\update.exe")
 $buffer = New-Object byte[] 1024
 $read = $stream.Read($buffer, 0, 1024)
 
@@ -384,7 +381,7 @@ $fileStream.Close()
 $stream.Close()
 $response.Close()
 
-Start-Process -FilePath "C:\Users\$env:username\KobiWare\update.exe"
+Start-Process -FilePath "C:\Users\"+$env:username+"\KobiWare\update.exe"
 """
             )
         os.system("C:\\Users\\" + os.getlogin() + "\\KobiWare\\updater.exe")
