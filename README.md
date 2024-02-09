@@ -1,4 +1,4 @@
 # MinecraftInstaller
 KobiWare Minecraft Installer
 
-Bypasses applocker and installs Minecraft launcher, whether you have an account or not
+Installs Minecraft launcher on Windows using Python coded EXE, whether you have an account or not
