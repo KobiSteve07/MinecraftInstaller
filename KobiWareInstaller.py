@@ -317,12 +317,12 @@ if exist "C:\Users\$env:username\KobiWare\MultiMC" (
                 
                     self.progress.setValue(0)
                     with zipfile.ZipFile("jdk-17_windows-x64_bin.zip") as zf:
-                    filesList = zf.namelist()
-                    for idx, file in enumerate(filesList):
-                        percent = round((idx / len(filesList))*100)
-                        self.progress.setFormat("Extracting Java... %d%%" % percent)
-                        self.progress.setValue(percent)
-                        zf.extract(file, self.paid)
+                        filesList = zf.namelist()
+                        for idx, file in enumerate(filesList):
+                            percent = round((idx / len(filesList))*100)
+                            self.progress.setFormat("Extracting Java... %d%%" % percent)
+                            self.progress.setValue(percent)
+                            zf.extract(file, self.paid)
                     self.progress.setFormat("Extracted Java")
                     self.progress.setValue(100)
 
