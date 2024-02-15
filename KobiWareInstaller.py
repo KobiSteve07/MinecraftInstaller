@@ -45,10 +45,11 @@ class MinecraftSetup(QMainWindow):
         self.title.setGeometry(10, 20, 450, 25)
         self.title.setFont(QFont("Arial", 15))
 
-        self.images = []
-        self.images.append(QPixmap("image.jpg").scaled(500, 200))
-        self.images.append(QPixmap("image(1).jpg").scaled(500, 200))
-        self.images.append(QPixmap("image(2).jpg").scaled(500, 200))
+        self.images = [
+            QPixmap(self.resource_path("image.jpg")).scaled(500, 200),
+            QPixmap(self.resource_path("image(1).jpg")).scaled(500, 200),
+            QPixmap(self.resource_path("image(2).jpg")).scaled(500, 200)
+        ]
 
         self.image_label = QLabel(parent=self)
         self.image_label.setGeometry(0, 100, 500, 200)
@@ -208,7 +209,7 @@ class MinecraftSetup(QMainWindow):
                     
                     os.system(r'powershell Set-ExecutionPolicy Bypass -Scope CurrentUser')
                     
-                    with zipfile.ZipFile(self.paid + "-win32.zip") as zf:
+                    with zipfile.ZipFile(self.resource_path(self.paid + "-win32.zip")) as zf:
                         filesList = zf.namelist()
                         for idx, file in enumerate(filesList):
                             percent = round((idx / len(filesList))*100)
@@ -313,7 +314,7 @@ if exist "C:\Users\"%username%"\KobiWare\prismlauncher" (
                     self.progress.setValue(100)
                     
                     self.progress.setValue(0)
-                    with zipfile.ZipFile("jdk-17_windows-x64_bin.zip") as zf:
+                    with zipfile.ZipFile(self.resource_path("jdk-17_windows-x64_bin.zip")) as zf:
                         filesList = zf.namelist()
                         for idx, file in enumerate(filesList):
                             percent = round((idx / len(filesList))*100)
@@ -352,6 +353,15 @@ if exist "C:\Users\"%username%"\KobiWare\prismlauncher" (
                 self.handle_text_edit()
         self.username.setDisabled(self.paid == "PrismLauncher")
     
+    def resource_path(self, relative_path):
+        try:
+            # PyInstaller creates a temp folder and stores path in _MEIPASS
+            base_path = sys._MEIPASS
+        except Exception:
+            base_path = os.path.abspath(".")
+
+        return os.path.join(base_path, relative_path)
+
 app = QApplication([])
 window1 = MinecraftSetup()
 if os.path.exists("C:/Users/" + os.getlogin() + "/KobiWare/updater.ps1"):
