@@ -333,9 +333,9 @@ if exist "C:\Users\"%username%"\KobiWare\prismlauncher" (
                     self.replace_line("C:/Users/" + os.getlogin() + "/KobiWare/" + self.paid + "/" + self.paid + ".cfg", 1, "JavaPath=C:/Users/" + os.getlogin() + "/KobiWare/Java/bin/javaw.exe")
                     self.replace_line("C:/Users/" + os.getlogin() + "/KobiWare/" + self.paid + "/" + self.paid + ".cfg", 3, "LastHostname=" + socket.gethostname())
                     if(self.paid == "UltimMC"):
-                        self.replace_line("C:/Users/" + os.getlogin() + "/KobiWare/UltimMC/accounts.json", 12, "                \"id\": \""+secrets.token_hex(32)+"\",")
-                        self.replace_line("C:/Users/" + os.getlogin() + "/KobiWare/UltimMC/accounts.json", 22, "                    \"clientToken\": \""+secrets.token_hex(16)+"\",")
-                        self.replace_line("C:/Users/" + os.getlogin() + "/KobiWare/UltimMC/accounts.json", 23, "                    \"userName\": \""+self.gamertag+"\"")
+                        self.replace_line("C:/Users/" + os.getlogin() + "/KobiWare/UltimMC/accounts.json", 12, "                \"id\": \""+secrets.token_hex(16)+"\",")
+                        self.replace_line("C:/Users/" + os.getlogin() + "/KobiWare/UltimMC/accounts.json", 23, "                    \"clientToken\": \""+secrets.token_hex(16)+"\",")
+                        self.replace_line("C:/Users/" + os.getlogin() + "/KobiWare/UltimMC/accounts.json", 24, "                    \"userName\": \""+self.gamertag+"\"")
                     self.progress.setValue(100)
                     
                     self.progress.setFormat("Installation complete")
